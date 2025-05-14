@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>CSS Clock</title>
+    </head>
+
+    <style>
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgb(26, 26, 26);
+        }
+
+        #clkcontainer {
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transform: rotateX(-28deg) rotateY(25deg);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 50vh;
+            transition: 0.5s;
+        }
+
+        #mainclk {
+            width: 500px;
+            height: 250px;
+            /*background-color: #0b010b;*/
+            background-color: rgb(45, 45, 45);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #btnpanel {
+            width: 500px;
+            height: 100px;
+            /*background-color: #0b010b;*/
+            background-color: rgb(48, 48, 48);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: rotateX(-90deg) translateY(-50px) translateZ(50px);
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        #toppanel {
+            width: 500px;
+            height: 100px;
+            /*background-color: #0b010b;*/
+            background-color: rgb(41, 41, 41);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: rotateX(-90deg) translateY(50px) translateZ(-200px);
+            border-bottom-right-radius: 15px;
+        }
+
+        #leftpanel {
+            width: 100px;
+            height: 250px;
+            /*background-color: #0b010b;*/
+            background-color: rgb(35, 35, 35);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: rotateY(-90deg) translateX(-50px) translateZ(250px);
+            border-bottom-left-radius: 15px;
+        }
+
+        #clktxt {
+            text-align: center;
+            color: white;
+            font-size: 90px;
+        }
+
+        #panelbtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 0px;
+            width: 50px;
+            height: 50px;
+            font-weight: bold;
+            border: none;
+            transition: 0.1s;
+            box-shadow: 0px -8px 3px 0px rgba(0, 0, 0, 0.4);
+            background-color: #1976d2;
+            border-radius: 5px;
+
+            margin-left: 15px;
+            margin-top: 20px;
+        }
+
+        #panelbtn:active {
+            box-shadow: 0 0 rgba(0, 0, 0, 0.4);
+            border-top-width: 2px;
+            transform: translateY(-5px);
+        }
+
+        #screenheading {
+            text-align: center;
+            color: white;
+        }
+
+        #settingsscr {
+            display: none;
+            background-size:contain;
+        }
+
+        .opttoggle {
+            margin-left: 15px;
+            margin-right: 10px;
+            margin-top: -2px;
+            width: 15px;
+            height: 15px; 
+            float: left;
+            border-radius: 15px;
+        }
+
+        #optlabel {
+            color: white;
+            margin-top: -4px;
+            float: left;
+        }
+    </style>
+
+    <body onload="update()">
+        <div id="clkcontainer">
+            <div id="mainclk">
+                <h1 id="clktxt">12:00</h1>
+                <div id="settingsscr">
+                    <h1 id="screenheading">Settings</h1>
+                    <input type="checkbox" class="opttoggle" id="hrtoggle">
+                    <p id="optlabel">24-Hour time</p>
+                    <br>
+                    <br>
+                    <input type="checkbox" class="opttoggle" id="sectoggle">
+                    <p id="optlabel">Show seconds</p>
+                </div>
+            </div>
+            <div id="toppanel"></div>
+            <div id="leftpanel"></div>
+            <div id="btnpanel">
+                <button id="panelbtn" onclick="settingsscr()">⚙︎</button>
+            </div>
+        </div>
+
+        <script>
+            let showSecs = false;
+            let showhrs24 = false;
+
+            function update() {
+                now = new Date();
+                const hours24 = now.getHours();
+                const minutes = now.getMinutes();
+                const hours = hours24 % 12 || 12;
+                const seconds = now.getSeconds();
+
+                if (showSecs) {
+                    document.getElementById("clktxt").innerHTML = hours + ":" + minutes + ":" + seconds;
+                } else {
+                    document.getElementById("clktxt").innerHTML = hours + ":" + minutes;
+                }
+
+                const timeoutId = setTimeout(update, 1000);
+            }
+
+            function checkCookies() {
+                if (getCookie("24hr") !== true) {
+                    showhrs24 = false;
+                } else {
+                    showhrs24 = true;
+                    document.getElementById("hrtoggle").checked = true;
+                }
+
+                if (getCookie("secs") !== true) {
+                    showsecs = false;
+                } else {
+                    showSecs = true;
+                    document.getElementById("sectoggle").checked = true;
+                }
+            }
+
+            function settingsscr() {
+                document.getElementById("clkcontainer").style.transform = "rotateX(0deg) rotateY(0deg) rotateZ(0deg)"
+                document.getElementById("clktxt").style.display = "none";
+                document.getElementById("settingsscr").style.display = "unset";
+            }
+
+            function cookieExists(name) {
+                return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+            }
+
+            function getCookie(name) {
+                const cookies = document.cookie.split("; ");
+                for (const cookie of cookies) {
+                    const [key, value] = cookie.split("=");
+                    if (key === name) return value;
+                }
+                return undefined;
+            }
+
+            document.getElementById("hrtoggle").addEventListener("change", function () {
+                const value = getCookie("24hr");
+                if (value !== "true") {
+                    document.cookie = "24hr=true; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                } else {
+                    document.cookie = "24hr=false; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                }
+            });
+
+            document.getElementById("sectoggle").addEventListener("change", function () {
+                const value = getCookie("secs");
+                if (value !== "true") {
+                    document.cookie = "secs=true; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                } else {
+                    document.cookie = "secs=false; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                }
+            });
+
+            window.addEventListener("DOMContentLoaded", function () {
+                checkCookies();
+            });
+        </script>
+    </body>
+</html>
